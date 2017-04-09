@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Popular Movies</string>
+    <string name="menu_order_popularity">Order by popularity</string>
+    <string name="menu_order_rating">Order by rating</string>
+</resources>
