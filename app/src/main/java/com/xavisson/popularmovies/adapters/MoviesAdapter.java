@@ -2,12 +2,10 @@ package com.xavisson.popularmovies.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.xavisson.popularmovies.R;
@@ -43,7 +41,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Log.d(LOG_TAG, "onCreateViewHolder");
+
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.movie_list_row, parent, false);
 
@@ -53,10 +51,10 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         Movie movie = moviesList.get(position);
-        Log.d(LOG_TAG, "onBindViewHolder_image: " + movie.posterPath);
-        String imageURL = "http://image.tmdb.org/t/p/w780" + movie.posterPath;
-        holder.title.setText(movie.title);
-        Picasso.with(context).load(imageURL).into(holder.image);
+//        "w92", "w154", "w185", "w342", "w500", "w780", or "original"
+        String imageURL = "http://image.tmdb.org/t/p/w342" + movie.posterPath;
+
+        Picasso.with(context).load(imageURL).resize(600,900).into(holder.image);
     }
 
     @Override
@@ -67,12 +65,10 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView image;
-        public TextView title;
 
         public MyViewHolder(final View view) {
             super(view);
             image = (ImageView) view.findViewById(R.id.movie_item_billboard);
-            title = (TextView) view.findViewById(R.id.movie_item_title);
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override

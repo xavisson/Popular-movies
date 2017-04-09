@@ -1,13 +1,15 @@
 package com.xavisson.popularmovies;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.xavisson.popularmovies.adapters.MoviesAdapter;
 import com.xavisson.popularmovies.data.Movie;
@@ -23,6 +25,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = "MainActivity";
+    public static final String EXTRA_MOVIE = "extraMovie";
     private static final int COLUMN_NUMBER = 2;
 
     private List<Movie> movieList = new ArrayList<>();
@@ -36,28 +39,56 @@ public class MainActivity extends AppCompatActivity {
 
         moviesRecycler = (RecyclerView) findViewById(R.id.movies_recycler);
 
-        loadMoviesData();
+        getPopularMovies();
 
     }
 
-    private  void initRecycler() {
+    private void initRecycler() {
 
         moviesAdapter = new MoviesAdapter(MainActivity.this, movieList);
-        GridLayoutManager layoutManager = new GridLayoutManager(MainActivity.this, COLUMN_NUMBER);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), COLUMN_NUMBER);
         moviesRecycler.setLayoutManager(layoutManager);
         moviesRecycler.setHasFixedSize(true);
         moviesRecycler.setAdapter(moviesAdapter);
         moviesAdapter.setOnItemClickListener(new MoviesAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                String name = movieList.get(position).title;
-                Toast.makeText(MainActivity.this, name + " was clicked!", Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(MainActivity.this, MovieDetailActivity.class);
+                intent.putExtra(EXTRA_MOVIE, movieList.get(position));
+                startActivity(intent);
             }
         });
     }
 
-    private void loadMoviesData() {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        if (itemId == R.id.action_popular) {
+            getPopularMovies();
+            return true;
+        } else if (itemId == R.id.action_rating) {
+            getTopRatedMovies();
+            return true;
+        }
+        else {
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void getPopularMovies() {
         String sortBy = "popular";
+        new FetchMoviesTask().execute(sortBy);
+    }
+
+    private void getTopRatedMovies() {
+        String sortBy = "top_rated";
         new FetchMoviesTask().execute(sortBy);
     }
 
@@ -74,8 +105,6 @@ public class MainActivity extends AppCompatActivity {
 
             //TODO: librerías Volley y Retrofit
             URL moviesRequestUrl = NetworkUtils.buildUrl(sortBy);
-            Log.d(LOG_TAG, "moviesRequestUrl: " + moviesRequestUrl);
-            Log.d(LOG_TAG, "static key: " + BuildConfig.MOVIES_API_KEY);
 
             try {
                 String jsonMoviesResponse = NetworkUtils

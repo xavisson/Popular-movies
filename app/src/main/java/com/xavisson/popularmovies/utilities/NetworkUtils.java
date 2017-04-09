@@ -1,7 +1,6 @@
 package com.xavisson.popularmovies.utilities;
 
 import android.net.Uri;
-import android.util.Log;
 
 import com.xavisson.popularmovies.BuildConfig;
 
@@ -48,8 +47,6 @@ public class NetworkUtils {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-
-        Log.d(TAG, "Built URI " + url);
 
         return url;
     }
