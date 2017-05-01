@@ -49,10 +49,12 @@ public class MovieDetailActivity extends AppCompatActivity {
 
     private void fillMovieDetails() {
 
-        String imageURL = "http://image.tmdb.org/t/p/w780" + movie.posterPath;
+        String imageURL = "http://image.tmdb.org/t/p/w780" + movie.backdropPath;
         Picasso.with(MovieDetailActivity.this).load(imageURL).into(billboard);
 
         title.setText(movie.title);
+        if (toolbar != null)
+            getSupportActionBar().setTitle(movie.title);
 
         String releaseString = movie.releaseDate.substring(0,4);
         releaseDate.setText(releaseString);

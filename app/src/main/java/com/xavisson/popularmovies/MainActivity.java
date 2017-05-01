@@ -1,7 +1,6 @@
 package com.xavisson.popularmovies;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -11,14 +10,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.xavisson.popularmovies.Network.FetchMoviesTask;
 import com.xavisson.popularmovies.adapters.MoviesAdapter;
 import com.xavisson.popularmovies.data.Movie;
 import com.xavisson.popularmovies.utilities.JSONUtils;
-import com.xavisson.popularmovies.utilities.NetworkUtils;
 
 import org.json.JSONException;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,64 +82,38 @@ public class MainActivity extends AppCompatActivity {
 
     private void getPopularMovies() {
         String sortBy = "popular";
-        new FetchMoviesTask().execute(sortBy);
+        new FetchMoviesTask(new FetchMoviesTask.AsyncMoviesResponse() {
+            @Override
+            public void taskPostExecute(String moviesData) {
+                fillMovies(moviesData);
+            }
+        }).execute(sortBy);
     }
 
     private void getTopRatedMovies() {
         String sortBy = "top_rated";
-        new FetchMoviesTask().execute(sortBy);
+        new FetchMoviesTask(new FetchMoviesTask.AsyncMoviesResponse() {
+            @Override
+            public void taskPostExecute(String moviesData) {
+                fillMovies(moviesData);
+            }
+        }).execute(sortBy);
     }
 
-    public class FetchMoviesTask extends AsyncTask<String, Void, String> {
+    public void fillMovies(String moviesData) {
 
-        @Override
-        protected String doInBackground(String... strings) {
+        try {
+            movieList = JSONUtils.getMoviesListFromJSON(MainActivity.this, moviesData);
+            Log.d(LOG_TAG, "onPost_size: " + movieList.size());
 
-            if (strings.length == 0) {
-                return null;
-            }
+            initRecycler();
 
-            String sortBy = strings[0];
-
-            //TODO: librerías Volley y Retrofit
-            URL moviesRequestUrl = NetworkUtils.buildUrl(sortBy);
-
-            try {
-                String jsonMoviesResponse = NetworkUtils
-                        .getResponseFromHttpUrl(moviesRequestUrl);
-
-//                String[] simpleJsonMoviesData = OpenWeatherJsonUtils
-//                        .getSimpleWeatherStringsFromJson(MainActivity.this, jsonMoviesResponse);
-//
-//                return simpleJsonMoviesData;
-
-                return jsonMoviesResponse;
-
-            } catch (Exception e) {
-                Log.d(LOG_TAG, "Exception: " + e.getMessage());
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String moviesData) {
-            if (moviesData != null) {
-
-                Log.d(LOG_TAG, "onPost: " + moviesData);
-                try {
-                    movieList = JSONUtils.getMoviesListFromJSON(MainActivity.this, moviesData);
-                    Log.d(LOG_TAG, "onPost_size: " + movieList.size());
-
-                    initRecycler();
-
-                    moviesAdapter.notifyDataSetChanged();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    Log.d(LOG_TAG, "Exception: " + e.getMessage());
-                }
-
-            }
+            moviesAdapter.notifyDataSetChanged();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.d(LOG_TAG, "Exception: " + e.getMessage());
         }
     }
+
+
 }
