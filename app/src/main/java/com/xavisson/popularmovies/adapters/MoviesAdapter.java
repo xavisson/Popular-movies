@@ -83,7 +83,5 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
                 }
             });
         }
-
-
     }
 }

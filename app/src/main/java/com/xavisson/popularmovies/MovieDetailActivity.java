@@ -1,5 +1,8 @@
 package com.xavisson.popularmovies;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatRatingBar;
@@ -136,6 +139,14 @@ public class MovieDetailActivity extends AppCompatActivity {
         trailersRecycler.setLayoutManager(layoutManager);
         trailersRecycler.setHasFixedSize(true);
         trailersRecycler.setAdapter(trailersAdapter);
+        trailersAdapter.setOnItemClickListener(new TrailersAdapter.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(View itemView, int position) {
+                String videoKey = trailersList.get(position).getKey();
+                openYoutubeVideo(videoKey);
+            }
+        });
 
         if (trailersList.size() > 0) {
             noTrailersText.setVisibility(View.GONE);
@@ -168,6 +179,17 @@ public class MovieDetailActivity extends AppCompatActivity {
                 fillTrailers(trailersData);
             }
         }).execute(movieId);
+    }
+
+    public void openYoutubeVideo(String id){
+        Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + id));
+        Intent webIntent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse("http://www.youtube.com/watch?v=" + id));
+        try {
+            startActivity(appIntent);
+        } catch (ActivityNotFoundException ex) {
+            startActivity(webIntent);
+        }
     }
 
     private void setupToolbar() {
