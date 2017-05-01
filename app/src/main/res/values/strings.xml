@@ -6,4 +6,6 @@
     <string name="trailers">Trailers</string>
     <string name="no_reviews">There are no reviews on this movie</string>
     <string name="no_trailers">There are no trailers of this movie</string>
+    <string name="action_favorite">Favorite</string>
+    <string name="action_share">Share</string>
 </resources>

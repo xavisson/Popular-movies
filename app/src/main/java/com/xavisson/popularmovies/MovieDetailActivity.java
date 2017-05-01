@@ -9,6 +9,8 @@ import android.support.v7.widget.AppCompatRatingBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -47,6 +49,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     private ReviewsAdapter reviewsAdapter;
     private TrailersAdapter trailersAdapter;
 
+    private Menu menu;
     private List<MovieReview> reviewsList = new ArrayList<>();
     private List<MovieTrailer> trailersList = new ArrayList<>();
 
@@ -205,10 +208,47 @@ public class MovieDetailActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        this.menu = menu;
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_movie_detail, menu);
+
+        if (menu != null) {
+            MenuItem favItem = menu.findItem(R.id.action_favorite);
+            if (favItem != null) {
+//                if (isFavorite(movie.id)) {
+//                    favItem.setIcon(R.drawable.ic_fav_toolbar_on);
+//
+//                } else {
+                    favItem.setIcon(R.drawable.ic_fav_toolbar_off);
+//                }
+            }
+        }
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
+                return true;
+            case R.id.action_favorite:
+                MenuItem favItem = menu.findItem(R.id.action_favorite);
+
+                if (favItem != null) {
+//                    if (isFavorite(movie.id)) {
+//
+//                        favItem.setIcon(R.drawable.ic_fav_toolbar_off);
+//                    } else {
+//                        ParseUtils.saveFavToParse(mHouseDetails);
+                        favItem.setIcon(R.drawable.ic_fav_toolbar_on);
+                    }
+                return true;
+            case R.id.action_share:
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
