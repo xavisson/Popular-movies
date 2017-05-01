@@ -3,6 +3,7 @@ package com.xavisson.popularmovies.data;
 import android.graphics.Bitmap;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by javidelpalacio on 2/4/17.
@@ -36,5 +37,13 @@ public class Movie implements Serializable {
         this.voteAverage = voteAverage;
         this.voteCount = voteCount;
         this.releaseDate = releaseDate;
+    }
+
+    public static class MovieResult {
+        private List<Movie> results;
+
+        public List<Movie> getResults() {
+            return results;
+        }
     }
 }
