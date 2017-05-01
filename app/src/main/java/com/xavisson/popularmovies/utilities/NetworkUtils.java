@@ -28,16 +28,36 @@ public class NetworkUtils {
     final static String RECENT_MOVIES = "";
     final static String TOP_RATED_MOVIES = "top_rated";
     final static String PARAM_API_KEY = "api_key";
+    final static String MOVIE_REVIEWS = "reviews";
+    final static String MOVIE_TRAILERS = "videos";
 
     final static String myAPIKey = BuildConfig.MOVIES_API_KEY;
 
 
-//    http://api.themoviedb.org/3/movie/popular?api_key= ...
-
     public static URL buildUrl(String sortBy) {
 
+        //    http://api.themoviedb.org/3/movie/popular?api_key= ...
         Uri builtUri = Uri.parse(MOVIES_URL).buildUpon()
                 .appendPath(sortBy)
+                .appendQueryParameter(PARAM_API_KEY, myAPIKey)
+                .build();
+
+        URL url = null;
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        return url;
+    }
+
+    public static URL reviewsUrl(String movieId) {
+
+        //    http://api.themoviedb.org/3/movie/{id}/reviews?api_key= ...
+        Uri builtUri = Uri.parse(MOVIES_URL).buildUpon()
+                .appendPath(movieId)
+                .appendPath(MOVIE_REVIEWS)
                 .appendQueryParameter(PARAM_API_KEY, myAPIKey)
                 .build();
 
