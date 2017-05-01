@@ -3,5 +3,7 @@
     <string name="menu_order_popularity">Order by popularity</string>
     <string name="menu_order_rating">Order by rating</string>
     <string name="reviews">Reviews</string>
+    <string name="trailers">Trailers</string>
     <string name="no_reviews">There are no reviews on this movie</string>
+    <string name="no_trailers">There are no trailers of this movie</string>
 </resources>

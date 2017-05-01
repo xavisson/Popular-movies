@@ -54,7 +54,6 @@ public class FetchReviewsTask extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onPostExecute(String reviews) {
-        Log.d(LOG_TAG, "reviews: " + reviews);
         if (reviews != null)
             delegate.taskPostExecute(reviews);
     }

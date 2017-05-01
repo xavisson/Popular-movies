@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.xavisson.popularmovies.R;
-import com.xavisson.popularmovies.data.MovieReviewItem;
+import com.xavisson.popularmovies.data.MovieReview;
 
 import java.util.List;
 
@@ -20,12 +20,9 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ViewHold
 
     private static final String LOG_TAG = "ReviewsAdapter";
     private Context context;
-    private List<MovieReviewItem> reviewsList;
+    private List<MovieReview> reviewsList;
 
-    private MoviesAdapter.OnItemClickListener listener;
-
-
-    public ReviewsAdapter(Context context, List<MovieReviewItem> reviewsList) {
+    public ReviewsAdapter(Context context, List<MovieReview> reviewsList) {
         this.context = context;
         this.reviewsList = reviewsList;
     }
@@ -41,7 +38,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(ReviewsAdapter.ViewHolder holder, int position) {
-        MovieReviewItem review = reviewsList.get(position);
+        MovieReview review = reviewsList.get(position);
         holder.author.setText(review.getAuthor());
         holder.content.setText(review.getContent());
 

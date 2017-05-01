@@ -71,6 +71,25 @@ public class NetworkUtils {
         return url;
     }
 
+    public static URL trailersUrl(String movieId) {
+
+        //    http://api.themoviedb.org/3/movie/{id}/reviews?api_key= ...
+        Uri builtUri = Uri.parse(MOVIES_URL).buildUpon()
+                .appendPath(movieId)
+                .appendPath(MOVIE_TRAILERS)
+                .appendQueryParameter(PARAM_API_KEY, myAPIKey)
+                .build();
+
+        URL url = null;
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        return url;
+    }
+
     public static String getResponseFromHttpUrl(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         try {

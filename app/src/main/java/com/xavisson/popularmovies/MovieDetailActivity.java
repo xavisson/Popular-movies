@@ -14,10 +14,14 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 import com.xavisson.popularmovies.Network.FetchReviewsTask;
+import com.xavisson.popularmovies.Network.FetchTrailersTask;
 import com.xavisson.popularmovies.adapters.ReviewsAdapter;
+import com.xavisson.popularmovies.adapters.TrailersAdapter;
 import com.xavisson.popularmovies.data.Movie;
-import com.xavisson.popularmovies.data.MovieReviewItem;
-import com.xavisson.popularmovies.data.MovieReviews;
+import com.xavisson.popularmovies.data.MovieReview;
+import com.xavisson.popularmovies.data.MovieReviewsResults;
+import com.xavisson.popularmovies.data.MovieTrailer;
+import com.xavisson.popularmovies.data.MovieTrailerResults;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,11 +37,15 @@ public class MovieDetailActivity extends AppCompatActivity {
     private TextView releaseDate;
     private TextView description;
     private TextView noReviewsText;
+    private TextView noTrailersText;
     private AppCompatRatingBar ratingBar;
     private RecyclerView reviewsRecycler;
+    private RecyclerView trailersRecycler;
     private ReviewsAdapter reviewsAdapter;
+    private TrailersAdapter trailersAdapter;
 
-    private List<MovieReviewItem> reviewItemList = new ArrayList<>();
+    private List<MovieReview> reviewsList = new ArrayList<>();
+    private List<MovieTrailer> trailersList = new ArrayList<>();
 
     private Movie movie;
 
@@ -54,15 +62,18 @@ public class MovieDetailActivity extends AppCompatActivity {
         releaseDate = (TextView) findViewById(R.id.movie_detail_release_date);
         description = (TextView) findViewById(R.id.movie_detail_description);
         noReviewsText = (TextView) findViewById(R.id.movie_detail_no_reviews_tv);
+        noTrailersText = (TextView) findViewById(R.id.movie_detail_no_trailers_tv);
         ratingBar = (AppCompatRatingBar) findViewById(R.id.movie_detail_ratingbar);
         reviewsRecycler = (RecyclerView) findViewById(R.id.movie_detail_reviews_recycler);
+        trailersRecycler = (RecyclerView) findViewById(R.id.movie_detail_trailers_recycler);
 
         if (getIntent().hasExtra(EXTRA_MOVIE))
             movie = (Movie) getIntent().getSerializableExtra(EXTRA_MOVIE);
 
         if (null != movie) {
             fillMovieDetails();
-            getMovieReviews();
+            requestMovieReviews();
+            requestMovieTrailers();
         }
 
     }
@@ -88,30 +99,54 @@ public class MovieDetailActivity extends AppCompatActivity {
     private void fillReviews(String reviewsData) {
 
         Gson gson = new Gson();
-        MovieReviews reviewList = gson.fromJson(reviewsData, MovieReviews.class);
+        MovieReviewsResults reviewResults = gson.fromJson(reviewsData, MovieReviewsResults.class);
 
-        for(MovieReviewItem result : reviewList.getResults()) {
-            reviewItemList.add(result);
+        for(MovieReview result : reviewResults.getResults()) {
+            reviewsList.add(result);
         }
 
-        reviewsAdapter = new ReviewsAdapter(MovieDetailActivity.this, reviewItemList);
+        reviewsAdapter = new ReviewsAdapter(MovieDetailActivity.this, reviewsList);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this,
                 LinearLayoutManager.VERTICAL, false);
         reviewsRecycler.setLayoutManager(layoutManager);
         reviewsRecycler.setHasFixedSize(true);
         reviewsRecycler.setAdapter(reviewsAdapter);
 
-        if (reviewItemList.size() > 0) {
+        if (reviewsList.size() > 0) {
             noReviewsText.setVisibility(View.GONE);
             reviewsRecycler.setVisibility(View.VISIBLE);
         } else {
             noReviewsText.setVisibility(View.VISIBLE);
             reviewsRecycler.setVisibility(View.GONE);
         }
-
     }
 
-    public void getMovieReviews() {
+    private void fillTrailers(String trailersData) {
+
+        Gson gson = new Gson();
+        MovieTrailerResults trailerResults = gson.fromJson(trailersData, MovieTrailerResults.class);
+
+        for(MovieTrailer result : trailerResults.getResults()) {
+            trailersList.add(result);
+        }
+
+        trailersAdapter = new TrailersAdapter(MovieDetailActivity.this, trailersList);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this,
+                LinearLayoutManager.HORIZONTAL, false);
+        trailersRecycler.setLayoutManager(layoutManager);
+        trailersRecycler.setHasFixedSize(true);
+        trailersRecycler.setAdapter(trailersAdapter);
+
+        if (trailersList.size() > 0) {
+            noTrailersText.setVisibility(View.GONE);
+            trailersRecycler.setVisibility(View.VISIBLE);
+        } else {
+            noTrailersText.setVisibility(View.VISIBLE);
+            trailersRecycler.setVisibility(View.GONE);
+        }
+    }
+
+    public void requestMovieReviews() {
 
         String movieId = String.valueOf(movie.id);
         new FetchReviewsTask(new FetchReviewsTask.AsyncReviewsResponse() {
@@ -119,6 +154,18 @@ public class MovieDetailActivity extends AppCompatActivity {
             public void taskPostExecute(String reviewsData) {
 
                 fillReviews(reviewsData);
+            }
+        }).execute(movieId);
+    }
+
+    public void requestMovieTrailers() {
+
+        String movieId = String.valueOf(movie.id);
+        new FetchTrailersTask(new FetchTrailersTask.AsyncTrailersResponse() {
+            @Override
+            public void taskPostExecute(String trailersData) {
+
+                fillTrailers(trailersData);
             }
         }).execute(movieId);
     }

@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
  * Created by javidelpalacio on 1/5/17.
  */
 
-public class MovieReviewItem {
+public class MovieReview {
 
     @SerializedName("id")
     @Expose

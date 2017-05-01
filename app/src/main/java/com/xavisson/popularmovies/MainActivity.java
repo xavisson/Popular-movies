@@ -1,6 +1,7 @@
 package com.xavisson.popularmovies;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -24,7 +25,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = "MainActivity";
     public static final String EXTRA_MOVIE = "extraMovie";
-    private static final int COLUMN_NUMBER = 2;
+    private static final int COLUMN_NUMBER_PORTRAIT = 2;
+    private static final int COLUMN_NUMBER_LANDSCAPE = 3;
 
     private List<Movie> movieList = new ArrayList<>();
     private RecyclerView moviesRecycler;
@@ -44,7 +46,15 @@ public class MainActivity extends AppCompatActivity {
     private void initRecycler() {
 
         moviesAdapter = new MoviesAdapter(MainActivity.this, movieList);
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), COLUMN_NUMBER);
+        RecyclerView.LayoutManager layoutManager;
+
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            layoutManager = new GridLayoutManager(getApplicationContext(), COLUMN_NUMBER_PORTRAIT);
+        }
+        else{
+            layoutManager = new GridLayoutManager(getApplicationContext(), COLUMN_NUMBER_LANDSCAPE);
+        }
+
         moviesRecycler.setLayoutManager(layoutManager);
         moviesRecycler.setHasFixedSize(true);
         moviesRecycler.setAdapter(moviesAdapter);
