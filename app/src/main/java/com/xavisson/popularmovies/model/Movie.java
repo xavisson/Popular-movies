@@ -1,4 +1,4 @@
-package com.xavisson.popularmovies.data;
+package com.xavisson.popularmovies.model;
 
 import android.graphics.Bitmap;
 

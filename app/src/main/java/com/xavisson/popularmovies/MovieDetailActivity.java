@@ -1,14 +1,21 @@
 package com.xavisson.popularmovies;
 
 import android.content.ActivityNotFoundException;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatRatingBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -22,20 +29,24 @@ import com.xavisson.popularmovies.Network.FetchReviewsTask;
 import com.xavisson.popularmovies.Network.FetchTrailersTask;
 import com.xavisson.popularmovies.adapters.ReviewsAdapter;
 import com.xavisson.popularmovies.adapters.TrailersAdapter;
-import com.xavisson.popularmovies.data.Movie;
-import com.xavisson.popularmovies.data.MovieReview;
-import com.xavisson.popularmovies.data.MovieReviewsResults;
-import com.xavisson.popularmovies.data.MovieTrailer;
-import com.xavisson.popularmovies.data.MovieTrailerResults;
+import com.xavisson.popularmovies.data.FavoritesContract;
+import com.xavisson.popularmovies.model.Movie;
+import com.xavisson.popularmovies.model.MovieReview;
+import com.xavisson.popularmovies.model.MovieReviewsResults;
+import com.xavisson.popularmovies.model.MovieTrailer;
+import com.xavisson.popularmovies.model.MovieTrailerResults;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.xavisson.popularmovies.MainActivity.EXTRA_MOVIE;
 
-public class MovieDetailActivity extends AppCompatActivity {
+public class MovieDetailActivity extends AppCompatActivity implements
+        LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
 
     private static final String LOG_TAG = "MovieDetailActivity";
+    private static final int FAVS_LOADER_ID = 0;
+
     private Toolbar toolbar;
     private ImageView billboard;
     private TextView title;
@@ -48,10 +59,11 @@ public class MovieDetailActivity extends AppCompatActivity {
     private RecyclerView trailersRecycler;
     private ReviewsAdapter reviewsAdapter;
     private TrailersAdapter trailersAdapter;
+    private FloatingActionButton favoriteButton;
 
-    private Menu menu;
     private List<MovieReview> reviewsList = new ArrayList<>();
     private List<MovieTrailer> trailersList = new ArrayList<>();
+    private boolean isFavorite = false;
 
     private Movie movie;
 
@@ -72,6 +84,8 @@ public class MovieDetailActivity extends AppCompatActivity {
         ratingBar = (AppCompatRatingBar) findViewById(R.id.movie_detail_ratingbar);
         reviewsRecycler = (RecyclerView) findViewById(R.id.movie_detail_reviews_recycler);
         trailersRecycler = (RecyclerView) findViewById(R.id.movie_detail_trailers_recycler);
+        favoriteButton = (FloatingActionButton) findViewById(R.id.movie_detail_favorite_button);
+        favoriteButton.setOnClickListener(this);
 
         if (getIntent().hasExtra(EXTRA_MOVIE))
             movie = (Movie) getIntent().getSerializableExtra(EXTRA_MOVIE);
@@ -82,6 +96,12 @@ public class MovieDetailActivity extends AppCompatActivity {
             requestMovieTrailers();
         }
 
+        getSupportLoaderManager().initLoader(FAVS_LOADER_ID, null, this);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 
     private void fillMovieDetails() {
@@ -195,6 +215,34 @@ public class MovieDetailActivity extends AppCompatActivity {
         }
     }
 
+    private void saveFavorite() {
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(FavoritesContract.FavoritesEntry.COLUMN_MOVIE_TITLE, movie.title);
+        contentValues.put(FavoritesContract.FavoritesEntry.COLUMN_MOVIE_ID, movie.id);
+
+        Uri uri = getContentResolver().insert(FavoritesContract.FavoritesEntry.CONTENT_URI, contentValues);
+
+        if(uri != null) {
+            isFavorite = true;
+            favoriteButton.setImageResource(R.drawable.ic_fav_toolbar_on);
+        }
+    }
+
+    private void deleteFavorite() {
+
+        String stringId = String.valueOf(movie.id);
+        Uri uri = FavoritesContract.FavoritesEntry.CONTENT_URI;
+        uri = uri.buildUpon().appendPath(stringId).build();
+
+        getContentResolver().delete(uri, null, null);
+
+        getSupportLoaderManager().restartLoader(FAVS_LOADER_ID, null, MovieDetailActivity.this);
+
+        favoriteButton.setImageResource(R.drawable.ic_fav_toolbar_off);
+        isFavorite = false;
+    }
+
     private void setupToolbar() {
 
         if (toolbar != null) {
@@ -208,24 +256,18 @@ public class MovieDetailActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    protected void onResume() {
+        super.onResume();
 
-        this.menu = menu;
+        getSupportLoaderManager().restartLoader(FAVS_LOADER_ID, null, this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
 
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_movie_detail, menu);
 
-        if (menu != null) {
-            MenuItem favItem = menu.findItem(R.id.action_favorite);
-            if (favItem != null) {
-//                if (isFavorite(movie.id)) {
-//                    favItem.setIcon(R.drawable.ic_fav_toolbar_on);
-//
-//                } else {
-                    favItem.setIcon(R.drawable.ic_fav_toolbar_off);
-//                }
-            }
-        }
         return true;
     }
 
@@ -236,22 +278,106 @@ public class MovieDetailActivity extends AppCompatActivity {
             case android.R.id.home:
                 finish();
                 return true;
-            case R.id.action_favorite:
-                MenuItem favItem = menu.findItem(R.id.action_favorite);
-
-                if (favItem != null) {
-//                    if (isFavorite(movie.id)) {
-//
-//                        favItem.setIcon(R.drawable.ic_fav_toolbar_off);
-//                    } else {
-//                        ParseUtils.saveFavToParse(mHouseDetails);
-                        favItem.setIcon(R.drawable.ic_fav_toolbar_on);
-                    }
-                return true;
             case R.id.action_share:
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    /**
+     * Instantiates and returns a new AsyncTaskLoader with the given ID.
+     * This loader will return task data as a Cursor or null if an error occurs.
+     *
+     * Implements the required callbacks to take care of loading data at all stages of loading.
+     */
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, final Bundle loaderArgs) {
+
+        return new AsyncTaskLoader<Cursor>(this) {
+
+            // Initialize a Cursor, this will hold all the task data
+            Cursor mTaskData = null;
+
+            // onStartLoading() is called when a loader first starts loading data
+            @Override
+            protected void onStartLoading() {
+                if (mTaskData != null) {
+                    // Delivers any previously loaded data immediately
+                    deliverResult(mTaskData);
+                } else {
+                    // Force a new load
+                    forceLoad();
+                }
+            }
+
+            @Override
+            public Cursor loadInBackground() {
+
+                String[] selectionArgs = new String[]{String.valueOf(movie.id)};
+                try {
+                    return getContentResolver().query(FavoritesContract.FavoritesEntry.CONTENT_URI,
+                            null,
+                            FavoritesContract.FavoritesEntry.COLUMN_MOVIE_ID + "=?",
+                            selectionArgs,
+                            FavoritesContract.FavoritesEntry._ID);
+
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Failed to asynchronously load data.");
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
+            public void deliverResult(Cursor data) {
+                mTaskData = data;
+                super.deliverResult(data);
+            }
+        };
+    }
+
+    /**
+     * Called when a previously created loader has finished its load.
+     *
+     * @param loader The Loader that has finished.
+     * @param data The data generated by the Loader.
+     */
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+        if (data.getCount() > 0) {
+            favoriteButton.setImageResource(R.drawable.ic_fav_toolbar_on);
+            isFavorite = true;
+        } else {
+            favoriteButton.setImageResource(R.drawable.ic_fav_toolbar_off);
+            isFavorite = false;
+        }
+    }
+
+
+    /**
+     * Called when a previously created loader is being reset, and thus
+     * making its data unavailable.
+     * onLoaderReset removes any references this activity had to the loader's data.
+     *
+     * @param loader The Loader that is being reset.
+     */
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+//        mAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onClick(View view) {
+
+        int id = view.getId();
+        if (id == favoriteButton.getId()) {
+
+            if (!isFavorite) {
+                saveFavorite();
+            } else {
+                deleteFavorite();
+            }
         }
     }
 }

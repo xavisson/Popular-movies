@@ -36,7 +36,7 @@ public class FetchReviewsTask extends AsyncTask<String, Void, String> {
 
         String sortBy = strings[0];
 
-        //TODO: Retrofit
+        //TODO: learn Retrofit2
         URL reviewsRequestUrl = NetworkUtils.reviewsUrl(sortBy);
 
         try {

@@ -1,4 +1,4 @@
-package com.xavisson.popularmovies.data;
+package com.xavisson.popularmovies.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

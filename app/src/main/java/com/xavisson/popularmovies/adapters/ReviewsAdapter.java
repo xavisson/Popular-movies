@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.xavisson.popularmovies.R;
-import com.xavisson.popularmovies.data.MovieReview;
+import com.xavisson.popularmovies.model.MovieReview;
 
 import java.util.List;
 

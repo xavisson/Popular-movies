@@ -9,7 +9,7 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 import com.xavisson.popularmovies.R;
-import com.xavisson.popularmovies.data.Movie;
+import com.xavisson.popularmovies.model.Movie;
 
 import java.util.List;
 

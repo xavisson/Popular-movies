@@ -3,7 +3,7 @@ package com.xavisson.popularmovies.utilities;
 import android.content.Context;
 import android.util.Log;
 
-import com.xavisson.popularmovies.data.Movie;
+import com.xavisson.popularmovies.model.Movie;
 
 import org.json.JSONArray;
 import org.json.JSONException;

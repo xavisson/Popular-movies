@@ -13,7 +13,7 @@ import android.view.View;
 
 import com.xavisson.popularmovies.Network.FetchMoviesTask;
 import com.xavisson.popularmovies.adapters.MoviesAdapter;
-import com.xavisson.popularmovies.data.Movie;
+import com.xavisson.popularmovies.model.Movie;
 import com.xavisson.popularmovies.utilities.JSONUtils;
 
 import org.json.JSONException;
