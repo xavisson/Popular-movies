@@ -14,7 +14,7 @@ public class FavoritesDbHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "favoritesDb.db";
 
     // If you change the database schema, you must increment the database version
-    private static final int VERSION = 1;
+    private static final int VERSION = 2;
 
 
     // Constructor
@@ -33,7 +33,15 @@ public class FavoritesDbHelper extends SQLiteOpenHelper {
         final String CREATE_TABLE = "CREATE TABLE "  + FavoritesContract.FavoritesEntry.TABLE_NAME + " (" +
                 FavoritesContract.FavoritesEntry._ID                + " INTEGER PRIMARY KEY, " +
                 FavoritesContract.FavoritesEntry.COLUMN_MOVIE_TITLE + " TEXT NOT NULL, " +
-                FavoritesContract.FavoritesEntry.COLUMN_MOVIE_ID    + " INTEGER NOT NULL);";
+                FavoritesContract.FavoritesEntry.COLUMN_MOVIE_ID    + " INTEGER NOT NULL, " +
+                FavoritesContract.FavoritesEntry.COLUMN_POSTER_PATH    + " TEXT NOT NULL, " +
+                FavoritesContract.FavoritesEntry.COLUMN_OVERVIEW    + " TEXT NOT NULL, " +
+                FavoritesContract.FavoritesEntry.COLUMN_BACKDROP_PATH    + " TEXT NOT NULL, " +
+                FavoritesContract.FavoritesEntry.COLUMN_POPULARITY    + " REAL NOT NULL, " +
+                FavoritesContract.FavoritesEntry.COLUMN_VOTE_AVERAGE    + " REAL NOT NULL, " +
+                FavoritesContract.FavoritesEntry.COLUMN_VOTE_COUNT    + " INTEGER NOT NULL, " +
+                FavoritesContract.FavoritesEntry.COLUMN_RELEASE_DATE    + " TEXT NOT NULL);"
+                ;
 
         db.execSQL(CREATE_TABLE);
     }

@@ -113,9 +113,12 @@ public class MovieDetailActivity extends AppCompatActivity implements
         if (toolbar != null)
             getSupportActionBar().setTitle(movie.title);
 
-        String releaseString = movie.releaseDate.substring(0,4);
-        releaseDate.setText(releaseString);
-        description.setText(movie.overview);
+        if (null != movie.releaseDate) {
+            String releaseString = movie.releaseDate.substring(0, 4);
+            releaseDate.setText(releaseString);
+        }
+        if (null != movie.overview)
+            description.setText(movie.overview);
 
         float ratingAvg = (float) movie.voteAverage / 2;
         ratingBar.setRating(ratingAvg);
@@ -220,6 +223,13 @@ public class MovieDetailActivity extends AppCompatActivity implements
         ContentValues contentValues = new ContentValues();
         contentValues.put(FavoritesContract.FavoritesEntry.COLUMN_MOVIE_TITLE, movie.title);
         contentValues.put(FavoritesContract.FavoritesEntry.COLUMN_MOVIE_ID, movie.id);
+        contentValues.put(FavoritesContract.FavoritesEntry.COLUMN_POSTER_PATH, movie.posterPath);
+        contentValues.put(FavoritesContract.FavoritesEntry.COLUMN_OVERVIEW, movie.overview);
+        contentValues.put(FavoritesContract.FavoritesEntry.COLUMN_BACKDROP_PATH, movie.backdropPath);
+        contentValues.put(FavoritesContract.FavoritesEntry.COLUMN_POPULARITY, movie.popularity);
+        contentValues.put(FavoritesContract.FavoritesEntry.COLUMN_VOTE_AVERAGE, movie.voteAverage);
+        contentValues.put(FavoritesContract.FavoritesEntry.COLUMN_VOTE_COUNT, movie.voteCount);
+        contentValues.put(FavoritesContract.FavoritesEntry.COLUMN_RELEASE_DATE, movie.releaseDate);
 
         Uri uri = getContentResolver().insert(FavoritesContract.FavoritesEntry.CONTENT_URI, contentValues);
 
@@ -296,15 +306,15 @@ public class MovieDetailActivity extends AppCompatActivity implements
 
         return new AsyncTaskLoader<Cursor>(this) {
 
-            // Initialize a Cursor, this will hold all the task data
-            Cursor mTaskData = null;
+            // Initialize a Cursor, this will hold all the favs data
+            Cursor mFavsData = null;
 
             // onStartLoading() is called when a loader first starts loading data
             @Override
             protected void onStartLoading() {
-                if (mTaskData != null) {
+                if (mFavsData != null) {
                     // Delivers any previously loaded data immediately
-                    deliverResult(mTaskData);
+                    deliverResult(mFavsData);
                 } else {
                     // Force a new load
                     forceLoad();
@@ -330,7 +340,7 @@ public class MovieDetailActivity extends AppCompatActivity implements
             }
 
             public void deliverResult(Cursor data) {
-                mTaskData = data;
+                mFavsData = data;
                 super.deliverResult(data);
             }
         };

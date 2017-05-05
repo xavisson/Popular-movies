@@ -34,6 +34,13 @@ public class FavoritesContract {
         // "_ID" column in addition to the two below
         public static final String COLUMN_MOVIE_TITLE = "movie_title";
         public static final String COLUMN_MOVIE_ID = "movie_id";
+        public static final String COLUMN_POSTER_PATH = "poster_path";
+        public static final String COLUMN_OVERVIEW = "overview";
+        public static final String COLUMN_BACKDROP_PATH = "backdrop_path";
+        public static final String COLUMN_POPULARITY = "popularity";
+        public static final String COLUMN_VOTE_AVERAGE = "vote_average";
+        public static final String COLUMN_VOTE_COUNT = "vote_count";
+        public static final String COLUMN_RELEASE_DATE = "release_date";
 
 
         /*
@@ -43,19 +50,16 @@ public class FavoritesContract {
         Note: Because this implements BaseColumns, the _id column is generated automatically
 
         favorites
-         - - - - - - - - - - - - - - - - - - - - - -
-        | _id  |    movie_title     |    movie_id   |
-         - - - - - - - - - - - - - - - - - - - - - -
-        |  1   |        Logan       |     283995    |
-         - - - - - - - - - - - - - - - - - - - - - -
-        |  2   |     Guardians...   |     233236    |
-         - - - - - - - - - - - - - - - - - - - - - -
+         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        | _id  |    movie_title     |    movie_id   |  poster_path  | ...
+         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        |  1   |        Logan       |     283995    |      ...      | ...
+         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        |  2   |     Guardians...   |     233236    |      ...      | ...
+         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         .
         .
         .
-         - - - - - - - - - - - - - - - - - - - - - -
-        | 43   |   Learn guitar     |       2       |
-         - - - - - - - - - - - - - - - - - - - - - -
 
          */
 

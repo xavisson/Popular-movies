@@ -2,6 +2,7 @@
     <string name="app_name">Popular Movies</string>
     <string name="menu_order_popularity">Order by popularity</string>
     <string name="menu_order_rating">Order by rating</string>
+    <string name="menu_show_favorites">Show favorites</string>
     <string name="reviews">Reviews</string>
     <string name="trailers">Trailers</string>
     <string name="no_reviews">There are no reviews on this movie</string>
