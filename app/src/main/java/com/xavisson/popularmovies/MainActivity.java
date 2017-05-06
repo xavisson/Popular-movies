@@ -134,8 +134,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         if (!isLoaderInitialized) {
             getSupportLoaderManager().initLoader(FAVS_LOADER_ID, null, this);
-        } else {
             isLoaderInitialized = true;
+        } else {
             getSupportLoaderManager().restartLoader(FAVS_LOADER_ID, null, this);
         }
     }

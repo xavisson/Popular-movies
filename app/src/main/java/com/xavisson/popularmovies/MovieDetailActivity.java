@@ -253,6 +253,21 @@ public class MovieDetailActivity extends AppCompatActivity implements
         isFavorite = false;
     }
 
+    private void shareTrailer() {
+
+        if ((null != trailersList) && (trailersList.size() > 0)) {
+
+            String videoId = trailersList.get(0).getKey();
+            String videoToShare = "http://www.youtube.com/watch?v=" + videoId;
+
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, videoToShare);
+            sendIntent.setType("text/plain");
+            startActivity(sendIntent);
+        }
+    }
+
     private void setupToolbar() {
 
         if (toolbar != null) {
@@ -289,6 +304,7 @@ public class MovieDetailActivity extends AppCompatActivity implements
                 finish();
                 return true;
             case R.id.action_share:
+                shareTrailer();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
