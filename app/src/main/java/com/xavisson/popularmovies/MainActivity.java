@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RelativeLayout;
 
 import com.xavisson.popularmovies.Network.FetchMoviesTask;
 import com.xavisson.popularmovies.adapters.MoviesAdapter;
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private Toolbar toolbar;
     private RecyclerView moviesRecycler;
     private MoviesAdapter moviesAdapter;
+    private RelativeLayout noFavsLayout;
 
     private List<Movie> movieList = new ArrayList<>();
     private String gridState = STATE_POPULAR;
@@ -66,6 +68,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         moviesRecycler = (RecyclerView) findViewById(R.id.movies_recycler);
+        noFavsLayout = (RelativeLayout) findViewById(R.id.no_favorites_layout);
+        noFavsLayout.setVisibility(View.GONE);
 
         if (savedInstanceState != null) {
             gridState = savedInstanceState.getString(GRID_STATE_KEY);
@@ -146,6 +150,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        noFavsLayout.setVisibility(View.GONE);
+        moviesRecycler.setVisibility(View.VISIBLE);
+
         int itemId = item.getItemId();
         if (itemId == R.id.action_popular) {
             getPopularMovies();
@@ -287,6 +295,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         if (data.getCount() > 0) {
 
+            noFavsLayout.setVisibility(View.GONE);
+            moviesRecycler.setVisibility(View.VISIBLE);
+
             while (data.moveToNext()) {
 
                 Movie movie = new Movie();
@@ -303,6 +314,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 movieList.add(movie);
                 displayMovies();
             }
+        } else {
+            noFavsLayout.setVisibility(View.VISIBLE);
+            moviesRecycler.setVisibility(View.GONE);
         }
     }
 
