@@ -251,6 +251,8 @@ public class MovieDetailActivity extends AppCompatActivity implements
 
         favoriteButton.setImageResource(R.drawable.ic_fav_toolbar_off);
         isFavorite = false;
+
+        MainActivity.updateFavorites = true;
     }
 
     private void shareTrailer() {

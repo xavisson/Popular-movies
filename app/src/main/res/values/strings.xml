@@ -10,4 +10,7 @@
     <string name="action_favorite">Favorite</string>
     <string name="action_share">Share</string>
     <string name="storyline">Storyline</string>
+    <string name="toolbar_high_rated">Highest Rated</string>
+    <string name="toolbar_favorites">Favorites</string>
+    <string name="toolbar_popular">Popular Movies</string>
 </resources>

@@ -10,6 +10,7 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -48,10 +49,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private static final int COLUMN_NUMBER_LANDSCAPE = 3;
     private static final int FAVS_LOADER_ID = 0;
 
-    private List<Movie> movieList = new ArrayList<>();
+    public static boolean updateFavorites = false;
+
+    private Toolbar toolbar;
     private RecyclerView moviesRecycler;
     private MoviesAdapter moviesAdapter;
 
+    private List<Movie> movieList = new ArrayList<>();
     private String gridState = STATE_POPULAR;
     private boolean isLoaderInitialized = false;
 
@@ -60,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         moviesRecycler = (RecyclerView) findViewById(R.id.movies_recycler);
 
         if (savedInstanceState != null) {
@@ -78,7 +83,32 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 getPopularMovies();
                 break;
         }
+        updateToolbar();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if ((gridState.equals(STATE_FAVORITES)) && (updateFavorites)) {
+            updateFavorites = false;
+            getFavorites();
+        }
+    }
+
+    private void updateToolbar() {
+
+        switch (gridState) {
+            case STATE_RATING:
+                getSupportActionBar().setTitle(getString(R.string.toolbar_high_rated));
+                break;
+            case STATE_FAVORITES:
+                getSupportActionBar().setTitle(getString(R.string.toolbar_favorites));
+                break;
+            default:
+                getSupportActionBar().setTitle(getString(R.string.toolbar_popular));
+                break;
+        }
 
     }
 
@@ -134,6 +164,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private void getPopularMovies() {
 
         gridState = STATE_POPULAR;
+        updateToolbar();
 
         String sortBy = "popular";
         new FetchMoviesTask(new FetchMoviesTask.AsyncMoviesResponse() {
@@ -147,6 +178,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private void getTopRatedMovies() {
 
         gridState = STATE_RATING;
+        updateToolbar();
 
         String sortBy = "top_rated";
         new FetchMoviesTask(new FetchMoviesTask.AsyncMoviesResponse() {
@@ -160,6 +192,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private void getFavorites() {
 
         gridState = STATE_FAVORITES;
+        updateToolbar();
 
         if (!isLoaderInitialized) {
             getSupportLoaderManager().initLoader(FAVS_LOADER_ID, null, this);
@@ -177,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.d(LOG_TAG, "Exception: " + e.getMessage());
+            Log.e(LOG_TAG, "Exception: " + e.getMessage());
         }
     }
 
