@@ -40,6 +40,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private static final String LOG_TAG = "MainActivity";
     public static final String EXTRA_MOVIE = "extraMovie";
+    public static final String GRID_STATE_KEY = "gridState";
+    public static final String STATE_POPULAR = "popular";
+    public static final String STATE_RATING = "highestRated";
+    public static final String STATE_FAVORITES = "favorites";
     private static final int COLUMN_NUMBER_PORTRAIT = 2;
     private static final int COLUMN_NUMBER_LANDSCAPE = 3;
     private static final int FAVS_LOADER_ID = 0;
@@ -48,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private RecyclerView moviesRecycler;
     private MoviesAdapter moviesAdapter;
 
+    private String gridState = STATE_POPULAR;
     private boolean isLoaderInitialized = false;
 
     @Override
@@ -57,7 +62,23 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         moviesRecycler = (RecyclerView) findViewById(R.id.movies_recycler);
 
-        getPopularMovies();
+        if (savedInstanceState != null) {
+            gridState = savedInstanceState.getString(GRID_STATE_KEY);
+        }
+
+        assert gridState != null;
+        switch (gridState) {
+            case STATE_RATING:
+                getTopRatedMovies();
+                break;
+            case STATE_FAVORITES:
+                getFavorites();
+                break;
+            default:
+                getPopularMovies();
+                break;
+        }
+
 
     }
 
@@ -111,6 +132,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private void getPopularMovies() {
+
+        gridState = STATE_POPULAR;
+
         String sortBy = "popular";
         new FetchMoviesTask(new FetchMoviesTask.AsyncMoviesResponse() {
             @Override
@@ -121,6 +145,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private void getTopRatedMovies() {
+
+        gridState = STATE_RATING;
+
         String sortBy = "top_rated";
         new FetchMoviesTask(new FetchMoviesTask.AsyncMoviesResponse() {
             @Override
@@ -131,6 +158,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private void getFavorites() {
+
+        gridState = STATE_FAVORITES;
 
         if (!isLoaderInitialized) {
             getSupportLoaderManager().initLoader(FAVS_LOADER_ID, null, this);
@@ -158,6 +187,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         moviesAdapter.notifyDataSetChanged();
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString(GRID_STATE_KEY, gridState);
+        super.onSaveInstanceState(outState);
+    }
 
     /**
      * Instantiates and returns a new AsyncTaskLoader with the given ID.
